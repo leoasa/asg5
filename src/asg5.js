@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
 
 function main() {
 
@@ -13,22 +14,22 @@ function main() {
     camera.position.set(0, 10, 20);
     camera.lookAt(0, 0, 0);
 
+    const controls = new OrbitControls(camera, canvas);
+    controls.target.set(0, 0, 0);
+    controls.update();
+
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('white');
 
+    // Setup skybox
     const loader = new THREE.TextureLoader();
-
-    {
-        const planeSize = 40;
-        const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize);
-        const planeMat = new THREE.MeshPhongMaterial({
-            side: THREE.DoubleSide,
-        });
-        planeMat.color.setRGB(1.25, .3, .4);
-        const mesh = new THREE.Mesh(planeGeo, planeMat);
-        mesh.rotation.x = Math.PI * - .5;
-        scene.add(mesh);
-    }
+    const texture = loader.load(
+      './sky.jpg',
+      () => {
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        texture.colorSpace = THREE.SRGBColorSpace;
+        scene.background = texture;
+      });
+    
 
     const shadowTexture = loader.load('https://threejs.org/manual/examples/resources/images/roundshadow.png');
     const sphereShadowBases = [];
